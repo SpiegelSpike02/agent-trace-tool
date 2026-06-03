@@ -8,13 +8,14 @@ import sys
 
 from .evaluator import evaluate_file
 from .langgraph_ad_agent import run_public_ad_harness, write_harness_traces
+from .langsmith_experiment import run_langsmith_experiment
 from .parser import LogParseError, parse_jsonl
 from .render import render_text_tree, traces_to_payload, write_payload
 
 
 def main(argv: list[str] | None = None) -> int:
     raw_argv = list(sys.argv[1:] if argv is None else argv)
-    commands = {"parse", "evaluate", "run-ad-harness"}
+    commands = {"parse", "evaluate", "run-ad-harness", "run-langsmith-experiment"}
     if raw_argv and raw_argv[0] not in commands and not raw_argv[0].startswith("-"):
         raw_argv.insert(0, "parse")
 
@@ -37,11 +38,24 @@ def main(argv: list[str] | None = None) -> int:
     harness_parser.add_argument("--limit", type=int, default=3, help="Number of public dataset rows to run.")
     harness_parser.add_argument("--out", default="examples/langgraph_ad_traces.jsonl", help="Output JSONL trace path.")
 
+    langsmith_parser = subparsers.add_parser(
+        "run-langsmith-experiment",
+        help="Run the LangGraph public-data harness as a LangSmith experiment.",
+    )
+    langsmith_parser.add_argument("--data", default="data/product_ads_sample.json", help="Public product ads dataset sample.")
+    langsmith_parser.add_argument("--limit", type=int, default=3, help="Number of public dataset rows to evaluate.")
+    langsmith_parser.add_argument("--project-name", default="agent-trace-tool", help="LangSmith tracing project name.")
+    langsmith_parser.add_argument("--experiment-prefix", default="public-ad-harness", help="LangSmith experiment prefix.")
+    langsmith_parser.add_argument("--upload-dataset", action="store_true", help="Create/update a LangSmith dataset first.")
+    langsmith_parser.add_argument("--dataset-name", default="agent-trace-tool-public-ads", help="LangSmith dataset name.")
+
     args = parser.parse_args(raw_argv)
     if args.command == "evaluate":
         return _evaluate(args)
     if args.command == "run-ad-harness":
         return _run_ad_harness(args)
+    if args.command == "run-langsmith-experiment":
+        return _run_langsmith_experiment(args)
 
     if args.command is None and not getattr(args, "input", None):
         parser.print_help()
@@ -96,6 +110,24 @@ def _run_ad_harness(args: argparse.Namespace) -> int:
         return 2
 
     print(f"wrote {len(results)} LangGraph traces to {args.out}")
+    return 0
+
+
+def _run_langsmith_experiment(args: argparse.Namespace) -> int:
+    try:
+        result = run_langsmith_experiment(
+            args.data,
+            limit=args.limit,
+            project_name=args.project_name,
+            experiment_prefix=args.experiment_prefix,
+            upload_dataset=args.upload_dataset,
+            dataset_name=args.dataset_name,
+        )
+    except (RuntimeError, ValueError, OSError) as exc:
+        print(f"langsmith experiment error: {exc}", file=sys.stderr)
+        return 2
+
+    print(result)
     return 0
 
 

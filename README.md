@@ -4,11 +4,12 @@ A lightweight Agent observability and evaluation harness.
 
 It parses JSONL execution logs into a `Trace -> Span -> Event` tree, highlights tool errors, latency and token-cost issues, exports dashboard-ready JSON, and evaluates traces against deterministic case specs.
 
-The repo now includes a real open-source Agent workflow path:
+The mature path is built around the LangChain ecosystem:
 
-- Agent framework: [LangGraph](https://github.com/langchain-ai/langgraph)
+- Agent workflow framework: [LangGraph](https://github.com/langchain-ai/langgraph)
+- Experiment and tracing platform: [LangSmith](https://docs.langchain.com/langsmith/home)
 - Public dataset: [llm-wizard/Product-Descriptions-and-Ads](https://huggingface.co/datasets/llm-wizard/Product-Descriptions-and-Ads)
-- Task: run a LangGraph ad-generation workflow over public product/ad rows, record every node as JSONL trace events, then evaluate the traces.
+- Task: run a LangGraph ad-generation workflow over public product/ad rows, trace/evaluate it with LangSmith, and keep a local JSONL fallback for deterministic CI.
 
 This is intentionally small and reproducible. It is not a production observability platform and does not depend on private company data.
 
@@ -22,6 +23,7 @@ This is intentionally small and reproducible. It is not a production observabili
 - Rule-based analysis for failed tools, missing span ends, orphan spans, high latency and high token usage
 - Evaluation case runner for deterministic CI checks
 - LangGraph public-data harness for reproducible Agent workflow traces
+- Optional LangSmith experiment runner for dataset evaluation and managed tracing
 
 ## Install
 
@@ -90,6 +92,35 @@ uv run agent-trace-tool evaluate examples/langgraph_ad_traces.jsonl \
   --cases examples/langgraph_ad_eval_cases.json
 ```
 
+## Run the Mature LangSmith Experiment Path
+
+Set LangSmith credentials:
+
+```bash
+set LANGSMITH_TRACING=true
+set LANGSMITH_API_KEY=your-api-key
+```
+
+Run the public-data LangGraph workflow as a LangSmith experiment:
+
+```bash
+uv run agent-trace-tool run-langsmith-experiment \
+  --data data/product_ads_sample.json \
+  --limit 3 \
+  --project-name agent-trace-tool \
+  --experiment-prefix public-ad-harness
+```
+
+Optionally create/update a LangSmith dataset first:
+
+```bash
+uv run agent-trace-tool run-langsmith-experiment \
+  --data data/product_ads_sample.json \
+  --limit 3 \
+  --upload-dataset \
+  --dataset-name agent-trace-tool-public-ads
+```
+
 Refresh the public dataset snapshot:
 
 ```bash
@@ -131,7 +162,13 @@ The parser accepts one JSON object per line. Minimal example:
 
 - [Architecture](docs/architecture.md)
 - [Public benchmarks and data sources](docs/datasets.md)
+- [LangSmith experiment path](docs/langsmith.md)
 
 ## Positioning
 
-This project demonstrates the bottom layer of Agent debugging: reliable execution records, deterministic analysis and reproducible evaluation checks. It can be mapped toward OpenTelemetry GenAI-style spans and compared conceptually with open-source observability tools such as Arize Phoenix, but the implementation is deliberately minimal so the full pipeline is easy to inspect.
+This project demonstrates both layers of Agent debugging:
+
+- production-style path: LangGraph + LangSmith datasets/experiments/tracing
+- local reproducible path: LangGraph + JSONL traces + deterministic parser/evaluator
+
+The local path exists to make the mechanics inspectable and CI-friendly. The LangSmith path is the more mature architecture for real monitoring and evaluation loops.

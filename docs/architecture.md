@@ -1,6 +1,6 @@
 # Architecture
 
-This project is a small Agent observability and evaluation harness. It focuses on the data path that is easiest to verify in public: run an open-source Agent workflow, parse execution logs, normalize them into trace objects, analyze failure/cost signals, and evaluate traces against reproducible case specs.
+This project is a small Agent observability and evaluation harness. The mature architecture uses LangGraph for Agent workflow execution and LangSmith for tracing, datasets and experiments. A local JSONL trace path remains available as a reproducible fallback for CI and for inspecting the underlying trace mechanics.
 
 ## Goals
 
@@ -9,7 +9,9 @@ This project is a small Agent observability and evaluation harness. It focuses o
 - Produce both machine-readable JSON and human-readable tree output.
 - Provide a static dashboard payload for inspecting trace structure without a hosted backend.
 - Evaluate traces against case specs with deterministic checks.
-- Run a LangGraph workflow over a public advertising dataset and emit parseable Agent traces.
+- Run a LangGraph workflow over a public advertising dataset.
+- Trace/evaluate the workflow through LangSmith when credentials are available.
+- Emit parseable local JSONL traces for deterministic CI and offline inspection.
 
 ## Non-goals
 
@@ -21,7 +23,10 @@ This project is a small Agent observability and evaluation harness. It focuses o
 
 ```mermaid
 flowchart LR
-    A["JSONL agent events"] --> B["parser.py"]
+    K["LangGraph ad workflow"] --> M["LangSmith tracing + experiments"]
+    L["Product-Descriptions-and-Ads"] --> K
+    K --> A["JSONL agent events"]
+    A --> B["parser.py"]
     B --> C["Trace / Span / Event models"]
     C --> D["analyzer.py"]
     D --> E["issues + summary metrics"]
@@ -30,8 +35,6 @@ flowchart LR
     C --> H["evaluator.py"]
     I["evaluation cases"] --> H
     H --> J["pass/fail report"]
-    K["LangGraph ad workflow"] --> A
-    L["Product-Descriptions-and-Ads"] --> K
 ```
 
 ## Trace Model
@@ -70,6 +73,17 @@ This is intentionally not an LLM-as-judge system. The goal is to provide a stabl
 Each node is instrumented into JSONL trace events. Agent/LLM-style steps are written as `span_start` / `span_end`; tool-like steps are written as `tool_call` / `tool_result`.
 
 The workflow uses `data/product_ads_sample.json`, a small snapshot of the public Hugging Face dataset `llm-wizard/Product-Descriptions-and-Ads`.
+
+## LangSmith Experiment Path
+
+`src/agent_trace_tool/langsmith_experiment.py` provides the production-style path:
+
+- converts the public dataset snapshot into LangSmith examples
+- wraps the LangGraph harness with `@traceable`
+- runs `langsmith.evaluate`
+- attaches row-level evaluators for compliance and ad structure
+
+This path requires `LANGSMITH_API_KEY` and is intentionally not required in CI. The local JSONL path continues to validate the same core workflow without external credentials.
 
 ## Why This Is Useful
 
