@@ -1,6 +1,17 @@
 # Public Benchmarks and Data Sources
 
-This repository does not use private company data. It is designed around public Agent benchmarks and reproducible local traces.
+This repository does not use private company data. It uses an open-source Agent workflow framework and a public advertising dataset snapshot for reproducible local traces.
+
+## Actually Used in This Repository
+
+| Component | Choice | Role |
+| --- | --- | --- |
+| Open-source Agent framework | [LangGraph](https://github.com/langchain-ai/langgraph) | Runs the public-data ad workflow as a `StateGraph`. |
+| Public dataset | [llm-wizard/Product-Descriptions-and-Ads](https://huggingface.co/datasets/llm-wizard/Product-Descriptions-and-Ads) | Provides product, description and reference ad rows. |
+| Local snapshot | `data/product_ads_sample.json` | Checked-in 10-row sample used by tests and demo commands. |
+| Refresh script | `scripts/fetch_public_ads_dataset.py` | Re-downloads the Hugging Face parquet file into the local JSON snapshot. |
+
+The LangGraph workflow emits `examples/langgraph_ad_traces.jsonl`, then `examples/langgraph_ad_eval_cases.json` evaluates those traces for errors, token budget, duration and required tool steps.
 
 ## Agent Evaluation Benchmarks
 
@@ -30,6 +41,6 @@ Potential public datasets:
 
 These sources can provide product descriptions, ad text or ad ratings for offline experiments. They should not be described as internal ad traffic or production campaign data.
 
-## Current Repository Data
+## Additional Repository Data
 
-The current checked-in sample is `examples/sample_trace.jsonl`. It is a small synthetic trace used to verify parser, analyzer, dashboard and evaluator behavior. The trace includes one intentional failed tool call so error highlighting and evaluation thresholds can be tested deterministically.
+`examples/sample_trace.jsonl` is a small synthetic trace used to verify parser, analyzer, dashboard and evaluator behavior. The trace includes one intentional failed tool call so error highlighting and evaluation thresholds can be tested deterministically.

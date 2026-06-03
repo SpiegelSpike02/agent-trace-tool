@@ -1,0 +1,56 @@
+{
+  "source": "https://huggingface.co/datasets/llm-wizard/Product-Descriptions-and-Ads",
+  "split": "test",
+  "records": [
+    {
+      "product": " Lace-trimmed camisole",
+      "description": " A delicate, spaghetti-strap top featuring lace detailing around the neckline or hem.",
+      "ad": "Discover elegance with our Lace-trimmed Camisole! This delicate spaghetti-strap top boasts intricate lace detailing for a refined touch. Experience comfort & sophistication in one. Shop now!"
+    },
+    {
+      "product": " A-line dress",
+      "description": " A dress that flares gently from the shoulders, creating a subtle trapeze shape that skims the body, perfect for any body type.",
+      "ad": "Discover elegance with our A-line dresses! Experience the timeless trapeze silhouette that gently flares from shoulders & skims your body. Perfect for any body type. Explore now & feel fabulous!"
+    },
+    {
+      "product": " Draped jacket",
+      "description": " A jacket with an open, waterfall-style front, which adds softness and fluidity to an outfit.",
+      "ad": "Introducing the Draped Jacket: Elevate your style with its waterfall-style front, adding unparalleled softness & fluidity to any outfit. Embrace effortless elegance today at our fashion store."
+    },
+    {
+      "product": " Tunic",
+      "description": " A long, flowing blouse that falls just below the hips, offering a versatile layering option.",
+      "ad": "Upgrade your wardrobe with our chic Tunic! Experience effortless elegance in a versatile, long, flowing blouse perfect for layering. Shop now and embrace style beyond the hips. Say yes to Tunic elegance!"
+    },
+    {
+      "product": " Infinity scarf",
+      "description": " A continuous loop of fabric that can be worn wrapped around the neck or draped over the shoulders.",
+      "ad": "Discover endless style with our Infinity Scarf! Wrap it or drape it for chic elegance, this versatile accessory elevates any outfit. Stay warm and fashionable - Shop now!"
+    },
+    {
+      "product": " Printed leggings",
+      "description": " Stretchy, close-fitting pants featuring bold patterns, perfect for casual or athletic wear.",
+      "ad": "Discover ultimate style with our Printed Leggings! Stretchy, bold patterns for both casual & athletic wear. Upgrade your wardrobe & experience next-level comfort today!"
+    },
+    {
+      "product": " Puffer jacket",
+      "description": " A warm, insulated jacket with a quilted design and a relaxed, casual fit.",
+      "ad": "Stay cozy with our Puffer Jacket, designed to keep you warm and stylish! Relaxed fit, quilted insulation—perfect for chilly days. Shop now and upgrade your winter wardrobe!"
+    },
+    {
+      "product": " Espadrille sandals",
+      "description": " Casual sandals with a woven base, perfect for summer outings.",
+      "ad": "Discover the perfect summer accessory - Espadrille Sandals! Designed for casual outings, these woven base sandals are a must-have. Shop now and turn heads during your warm-weather adventures."
+    },
+    {
+      "product": " Paisley-print dress",
+      "description": " A dress featuring the intricate, teardrop-shaped paisley pattern, often associated with bohemian style.",
+      "ad": "Discover bohemian elegance: Our Paisley-print dress embraces alluring teardrop patterns, taking chic style to new heights. Step confidently into sophistication. #PaisleyPrintDress"
+    },
+    {
+      "product": " Houndstooth coat",
+      "description": " A classic coat featuring the traditional houndstooth check pattern.",
+      "ad": "Discover the timeless Houndstooth Coat! Classic, stylish & versatile, perfect for any wardrobe. Get your hands on this all-season must-have. Shop now for a trendy statement look. Say hello to cozy chic!"
+    }
+  ]
+}

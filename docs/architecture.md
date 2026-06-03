@@ -1,6 +1,6 @@
 # Architecture
 
-This project is a small Agent observability and evaluation harness. It focuses on the data path that is easiest to verify in public: parse execution logs, normalize them into trace objects, analyze failure/cost signals, and evaluate traces against reproducible case specs.
+This project is a small Agent observability and evaluation harness. It focuses on the data path that is easiest to verify in public: run an open-source Agent workflow, parse execution logs, normalize them into trace objects, analyze failure/cost signals, and evaluate traces against reproducible case specs.
 
 ## Goals
 
@@ -9,6 +9,7 @@ This project is a small Agent observability and evaluation harness. It focuses o
 - Produce both machine-readable JSON and human-readable tree output.
 - Provide a static dashboard payload for inspecting trace structure without a hosted backend.
 - Evaluate traces against case specs with deterministic checks.
+- Run a LangGraph workflow over a public advertising dataset and emit parseable Agent traces.
 
 ## Non-goals
 
@@ -29,6 +30,8 @@ flowchart LR
     C --> H["evaluator.py"]
     I["evaluation cases"] --> H
     H --> J["pass/fail report"]
+    K["LangGraph ad workflow"] --> A
+    L["Product-Descriptions-and-Ads"] --> K
 ```
 
 ## Trace Model
@@ -53,6 +56,20 @@ Supported deterministic checks:
 - required tool usage
 
 This is intentionally not an LLM-as-judge system. The goal is to provide a stable baseline that can run in CI without model access.
+
+## LangGraph Harness
+
+`src/agent_trace_tool/langgraph_ad_agent.py` builds a LangGraph `StateGraph` with five nodes:
+
+1. `parse_brief`
+2. `plan_strategy`
+3. `generate_ad`
+4. `compliance_check`
+5. `score_ad`
+
+Each node is instrumented into JSONL trace events. Agent/LLM-style steps are written as `span_start` / `span_end`; tool-like steps are written as `tool_call` / `tool_result`.
+
+The workflow uses `data/product_ads_sample.json`, a small snapshot of the public Hugging Face dataset `llm-wizard/Product-Descriptions-and-Ads`.
 
 ## Why This Is Useful
 

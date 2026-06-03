@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Lightweight Agent trace parser, analyzer and evaluation harness"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "langgraph>=1.0.5",
+]
 keywords = ["agent", "tracing", "observability", "evaluation", "llm"]
 
 [project.scripts]
@@ -13,6 +15,10 @@ agent-trace-tool = "agent_trace_tool.__main__:main"
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
+]
+dataset = [
+    "pandas>=2.3.3",
+    "pyarrow>=22.0.0",
 ]
 
 [build-system]

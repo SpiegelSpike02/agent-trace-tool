@@ -4,6 +4,12 @@ A lightweight Agent observability and evaluation harness.
 
 It parses JSONL execution logs into a `Trace -> Span -> Event` tree, highlights tool errors, latency and token-cost issues, exports dashboard-ready JSON, and evaluates traces against deterministic case specs.
 
+The repo now includes a real open-source Agent workflow path:
+
+- Agent framework: [LangGraph](https://github.com/langchain-ai/langgraph)
+- Public dataset: [llm-wizard/Product-Descriptions-and-Ads](https://huggingface.co/datasets/llm-wizard/Product-Descriptions-and-Ads)
+- Task: run a LangGraph ad-generation workflow over public product/ad rows, record every node as JSONL trace events, then evaluate the traces.
+
 This is intentionally small and reproducible. It is not a production observability platform and does not depend on private company data.
 
 ## Features
@@ -15,6 +21,7 @@ This is intentionally small and reproducible. It is not a production observabili
 - Static dashboard demo
 - Rule-based analysis for failed tools, missing span ends, orphan spans, high latency and high token usage
 - Evaluation case runner for deterministic CI checks
+- LangGraph public-data harness for reproducible Agent workflow traces
 
 ## Install
 
@@ -58,6 +65,38 @@ uv run agent-trace-tool evaluate examples/sample_trace.jsonl --cases examples/ev
 ```
 
 The sample case allows one known tool error and checks token, duration and required-tool constraints.
+
+## Run the LangGraph Public-Data Harness
+
+The checked-in dataset snapshot is stored at `data/product_ads_sample.json` and is derived from the Hugging Face dataset `llm-wizard/Product-Descriptions-and-Ads`.
+
+```bash
+uv run agent-trace-tool run-ad-harness \
+  --data data/product_ads_sample.json \
+  --limit 3 \
+  --out examples/langgraph_ad_traces.jsonl
+```
+
+Inspect the generated LangGraph traces:
+
+```bash
+uv run agent-trace-tool parse examples/langgraph_ad_traces.jsonl --tree
+```
+
+Evaluate them:
+
+```bash
+uv run agent-trace-tool evaluate examples/langgraph_ad_traces.jsonl \
+  --cases examples/langgraph_ad_eval_cases.json
+```
+
+Refresh the public dataset snapshot:
+
+```bash
+uv run --group dataset python scripts/fetch_public_ads_dataset.py \
+  --out data/product_ads_sample.json \
+  --limit 10
+```
 
 ## Generate Dashboard Data
 

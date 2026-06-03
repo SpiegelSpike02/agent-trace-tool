@@ -19,5 +19,9 @@ jobs:
         run: uv sync --locked
       - name: Run tests
         run: uv run pytest -q
+      - name: Generate LangGraph public-data traces
+        run: uv run agent-trace-tool run-ad-harness --data data/product_ads_sample.json --limit 3 --out examples/langgraph_ad_traces.jsonl
       - name: Run sample evaluation
         run: uv run agent-trace-tool evaluate examples/sample_trace.jsonl --cases examples/eval_cases.json
+      - name: Run LangGraph public-data evaluation
+        run: uv run agent-trace-tool evaluate examples/langgraph_ad_traces.jsonl --cases examples/langgraph_ad_eval_cases.json

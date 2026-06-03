@@ -7,13 +7,14 @@ import json
 import sys
 
 from .evaluator import evaluate_file
+from .langgraph_ad_agent import run_public_ad_harness, write_harness_traces
 from .parser import LogParseError, parse_jsonl
 from .render import render_text_tree, traces_to_payload, write_payload
 
 
 def main(argv: list[str] | None = None) -> int:
     raw_argv = list(sys.argv[1:] if argv is None else argv)
-    commands = {"parse", "evaluate"}
+    commands = {"parse", "evaluate", "run-ad-harness"}
     if raw_argv and raw_argv[0] not in commands and not raw_argv[0].startswith("-"):
         raw_argv.insert(0, "parse")
 
@@ -31,9 +32,16 @@ def main(argv: list[str] | None = None) -> int:
     eval_parser.add_argument("--cases", required=True, help="Path to an evaluation cases JSON file.")
     eval_parser.add_argument("--out", help="Write evaluation report JSON to this file.")
 
+    harness_parser = subparsers.add_parser("run-ad-harness", help="Run the LangGraph ad harness over public data.")
+    harness_parser.add_argument("--data", default="data/product_ads_sample.json", help="Public product ads dataset sample.")
+    harness_parser.add_argument("--limit", type=int, default=3, help="Number of public dataset rows to run.")
+    harness_parser.add_argument("--out", default="examples/langgraph_ad_traces.jsonl", help="Output JSONL trace path.")
+
     args = parser.parse_args(raw_argv)
     if args.command == "evaluate":
         return _evaluate(args)
+    if args.command == "run-ad-harness":
+        return _run_ad_harness(args)
 
     if args.command is None and not getattr(args, "input", None):
         parser.print_help()
@@ -77,6 +85,18 @@ def _evaluate(args: argparse.Namespace) -> int:
     else:
         print(text)
     return 0 if report["failed_count"] == 0 else 1
+
+
+def _run_ad_harness(args: argparse.Namespace) -> int:
+    try:
+        results = run_public_ad_harness(args.data, limit=args.limit)
+        write_harness_traces(results, args.out)
+    except (ValueError, OSError) as exc:
+        print(f"harness error: {exc}", file=sys.stderr)
+        return 2
+
+    print(f"wrote {len(results)} LangGraph traces to {args.out}")
+    return 0
 
 
 if __name__ == "__main__":
