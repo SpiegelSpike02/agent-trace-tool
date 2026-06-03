@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Trace Analyzer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./data/sample_trace.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Agent Trace Analyzer</h1>
+        <p id="datasetMeta">schema: agent-trace-v1</p>
+      </div>
+      <label class="file-loader">
+        <span>加载 JSON</span>
+        <input id="fileInput" type="file" accept="application/json,.json" />
+      </label>
+    </header>
+
+    <main class="dashboard">
+      <section id="metricGrid" class="metric-grid" aria-label="Trace metrics"></section>
+
+      <section class="workspace" aria-label="Trace workspace">
+        <aside class="trace-sidebar">
+          <div class="panel-title">Traces</div>
+          <div id="traceList" class="trace-list"></div>
+        </aside>
+
+        <section class="tree-panel">
+          <div class="panel-heading">
+            <div>
+              <div class="panel-title">Trajectory Tree</div>
+              <div id="activeTraceMeta" class="muted"></div>
+            </div>
+            <div id="statusLegend" class="legend"></div>
+          </div>
+          <div id="treeRoot" class="tree-root"></div>
+        </section>
+
+        <aside class="detail-panel">
+          <div class="panel-title">Span Detail</div>
+          <div id="detailBody" class="detail-body"></div>
+        </aside>
+      </section>
+
+      <section class="issues-panel">
+        <div class="panel-title">Analysis</div>
+        <div id="issueList" class="issue-list"></div>
+      </section>
+    </main>
+  </body>
+</html>

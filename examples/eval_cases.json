@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {
+      "case_id": "sample-debug-trace",
+      "trace_id": "trace-week4-001",
+      "task": "Inspect a multi-step agent run and surface one intentionally failed tool call.",
+      "source": "local synthetic trace modeled after AgentBench/WebArena-style multi-step execution",
+      "expected_status": "known_error",
+      "max_errors": 1,
+      "max_total_tokens": 6000,
+      "max_duration_ms": 10000,
+      "required_tools": ["search_docs", "read_cache"]
+    }
+  ]
+}
